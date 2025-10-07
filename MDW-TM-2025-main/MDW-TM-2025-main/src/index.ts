@@ -7,7 +7,7 @@ import loginRoutes from "./routes/loginRoutes";
 import productRoutes from "./routes/productRoutes";
 import cartRoutes from "./routes/cartRoutes";
 import { authMiddleware } from "./middlewares/authMiddleware";
-import { refreshTokenMiddleware } from "./middlewares/refreshTOkenMiddleware";
+import { refreshTokenMiddleware } from "./middlewares/refreshTokenMiddleware";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
