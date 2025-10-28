@@ -1,43 +1,63 @@
-import { Navigate, Route, Routes } from "react-router";
-import { DashboardComponent } from "../components/DashboardComponent";
-import { AdminComponent } from "../components/AdminComponent";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRouter } from "./ProtectedRouter";
-import type { User } from "../types/user";
-import { useEffect, useState } from "react";
+import LoginPage from "../pages/LoginPage";
+import DashboardPage from "../pages/DashboardPage";
+import ProductsPage from "../pages/ProductsPage";
+import AdminPage from "../pages/AdminPage";
+
+const mockUser = {
+  id: 1,
+  name: "John Doe",
+  role: "USER",
+  isLoggedIn: true,
+};
 
 export const AppRouter = () => {
-  const [user, setUser] = useState<User>();
-
-  useEffect(() => {
-    setUser({
-      id: 1,
-      name: "John Doe",
-      username: "johndoe",
-      email: "",
-      permissionLevel: [],
-    });
-  }, []);
-
   return (
     <Routes>
-      <Route index element={<DashboardComponent />} />
-      <Route path="/home" element={<DashboardComponent />} />
-      <Route element={<ProtectedRouter isAllowed={!!user} />}>
-        <Route path="/about" element={<h1>About</h1>} />
-        <Route path="/admin" element={<AdminComponent />} />
-      </Route>
       <Route
-        path="/analytics"
+        path="/login"
+        element={
+          mockUser.isLoggedIn ? <Navigate to="/home" replace /> : <LoginPage />
+        }
+      />
+
+      <Route
         element={
           <ProtectedRouter
-            isAllowed={!!user && user.permissionLevel.includes("ADMIN")}
-            redirectTo="/about"
+            isAllowed={mockUser.isLoggedIn}
+            redirectTo="/login"
+          />
+        }
+      >
+        <Route path="/home" element={<DashboardPage />} />
+        <Route path="/products" element={<ProductsPage />} />
+      </Route>
+
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRouter
+            isAllowed={mockUser.isLoggedIn && mockUser.role === "ADMIN"}
+            redirectTo="/home"
           >
-            <h1>Analytics</h1>
+            <AdminPage />
           </ProtectedRouter>
         }
       />
-      <Route path="/*" element={<Navigate to="/home" />} />
+
+      <Route
+        path="/"
+        element={
+          <Navigate to={mockUser.isLoggedIn ? "/home" : "/login"} replace />
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <Navigate to={mockUser.isLoggedIn ? "/home" : "/login"} replace />
+        }
+      />
     </Routes>
   );
 };
